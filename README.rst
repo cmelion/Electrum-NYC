@@ -1,11 +1,13 @@
-Electrum-NYC - Lightweight Litecoin client
+This is a WIP:  DO NOT ATTEMPT TO INSTALL!
+
+Electrum-NYC - Lightweight NewYorkCoin client
 ==========================================
 
 ::
 
   Licence: MIT Licence
   Original Author: Thomas Voegtlin
-  Port Maintainer: Pooler
+  Port Maintainer: NewYorkCoin 
   Language: Python
   Homepage: https://electrum-nyc.org/
 
