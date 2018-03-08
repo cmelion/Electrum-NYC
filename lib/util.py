@@ -444,25 +444,15 @@ def time_difference(distance_in_time, include_seconds):
         return "over %d years" % (round(distance_in_minutes / 525600))
 
 mainnet_block_explorers = {
-    'explorer.litecoin.net': ('http://explorer.litecoin.net/',
+    'NyCoin.Community': ('https://explorer.nycoin.community/',
                         {'tx': 'tx/', 'addr': 'address/'}),
-    'Blockr.io': ('https://nyc.blockr.io/',
-                        {'tx': 'tx/info/', 'addr': 'address/info/'}),
-    'BlockCypher.com': ('https://live.blockcypher.com/nyc/',
-                        {'tx': 'tx/', 'addr': 'address/'}),
-    'SoChain': ('https://chain.so/',
-                        {'tx': 'tx/NYC/', 'addr': 'address/NYC/'}),
-    'system default': ('blockchain://12a765e31ffd4059bada1e25190f6e98c99d9714d334efa41a195a7e7e04bfe2/',
+    'NyCoin.Info': ('https://explorer.nycoin.info/',
                         {'tx': 'tx/', 'addr': 'address/'}),
 }
 
 testnet_block_explorers = {
-    'SoChain': ('https://chain.so/',
-                        {'tx': 'tx/NYCTEST/', 'addr': 'address/NYCTEST/'}),
-    'LiteCore': ('https://testnet.litecore.io/',
+    'NyCoin.Info Testnet': ('https://explorer-testnet.nycoin.info/',
                         {'tx': 'tx/', 'addr': 'address/'}),
-    'system default': ('blockchain://4966625a4b2851d9fdee139e56211a0d88575f59ed816ff5e6a63deb4e3e29a0/',
-                       {'tx': 'tx/', 'addr': 'address/'}),
 }
 
 def block_explorer_info():
