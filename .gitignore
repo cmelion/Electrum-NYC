@@ -6,7 +6,8 @@ dist/
 *.egg/
 /electrum.py
 contrib/pyinstaller/
-Electrum_LTC.egg-info/
+Electrum_NYC.egg-info/
+Electrum_LTC.egg-info/*
 gui/qt/icons_rc.py
 locale/
 .devlocaltmp/
@@ -16,6 +17,7 @@ env/
 .tox/
 .buildozer/
 bin/
+electrum-nyc.conf
 
 # tox files
 .cache/
