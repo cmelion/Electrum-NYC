@@ -51,6 +51,8 @@ from electrum_nyc.util import (format_time, format_satoshis, PrintError,
 from electrum_nyc import Transaction
 from electrum_nyc import util, bitcoin, commands, coinchooser
 from electrum_nyc import paymentrequest
+from electrum_nyc.bitcoin import DUST_SOFT_LIMIT
+from electrum_nyc.bitcoin import MAX_FEE_RATE
 from electrum_nyc.wallet import Multisig_Wallet
 try:
     from electrum_nyc.plot import plot_history
@@ -201,7 +203,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
             self.new_fx_history_signal.connect(self.on_fx_history)
 
         # update fee slider in case we missed the callback
-        self.fee_slider.update()
+        #self.fee_slider.update()
         self.load_wallet(wallet)
         self.connect_slots(gui_object.timer)
         self.fetch_alias()
@@ -776,7 +778,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         self.receive_address_e = ButtonsLineEdit()
         self.receive_address_e.addCopyButton(self.app)
         self.receive_address_e.setReadOnly(True)
-        msg = _('Litecoin address where the payment should be received. Note that each payment request uses a different Litecoin address.')
+        msg = _('NewYorkCoin address where the payment should be received. Note that each payment request uses a different NewYorkCoin address.')
         self.receive_address_label = HelpLabel(_('Receiving address'), msg)
         self.receive_address_e.textChanged.connect(self.update_receive_qr)
         self.receive_address_e.setFocusPolicy(Qt.NoFocus)
@@ -806,8 +808,8 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         msg = ' '.join([
             _('Expiration date of your request.'),
             _('This information is seen by the recipient if you send them a signed payment request.'),
-            _('Expired requests have to be deleted manually from your list, in order to free the corresponding Litecoin addresses.'),
-            _('The Litecoin address never expires and will always be part of this Electrum wallet.'),
+            _('Expired requests have to be deleted manually from your list, in order to free the corresponding NewYorkCoin addresses.'),
+            _('The NewYorkCoin address never expires and will always be part of this Electrum wallet.'),
         ])
         grid.addWidget(HelpLabel(_('Request expires'), msg), 3, 0)
         grid.addWidget(self.expires_combo, 3, 1)
@@ -1027,7 +1029,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         self.amount_e = BTCAmountEdit(self.get_decimal_point)
         self.payto_e = PayToEdit(self)
         msg = _('Recipient of the funds.') + '\n\n'\
-              + _('You may enter a Litecoin address, a label from your list of contacts (a list of completions will be proposed), or an alias (email-like address that forwards to a Litecoin address)')
+              + _('You may enter a NewYorkCoin address, a label from your list of contacts (a list of completions will be proposed), or an alias (email-like address that forwards to a NewYorkCoin address)')
         payto_label = HelpLabel(_('Pay to'), msg)
         grid.addWidget(payto_label, 1, 0)
         grid.addWidget(self.payto_e, 1, 1, 1, -1)
@@ -1074,10 +1076,10 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         hbox.addStretch(1)
         grid.addLayout(hbox, 4, 4)
 
-        msg = _('Litecoin transactions are in general not free. A transaction fee is paid by the sender of the funds.') + '\n\n'\
-              + _('The amount of fee can be decided freely by the sender. However, transactions with low fees take more time to be processed.') + '\n\n'\
-              + _('A suggested fee is automatically added to this field. You may override it. The suggested fee increases with the size of the transaction.')
-        self.fee_e_label = HelpLabel(_('Fee'), msg)
+        #msg = _('Litecoin transactions are in general not free. A transaction fee is paid by the sender of the funds.') + '\n\n'\
+        #      + _('The amount of fee can be decided freely by the sender. However, transactions with low fees take more time to be processed.') + '\n\n'\
+        #      + _('A suggested fee is automatically added to this field. You may override it. The suggested fee increases with the size of the transaction.')
+        #self.fee_e_label = HelpLabel(_('Fee'), msg)
 
         def fee_cb(dyn, pos, fee_rate):
             if dyn:
@@ -1097,8 +1099,8 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
             self.fee_slider.activate()
             self.spend_max() if self.is_max else self.update_fee()
 
-        self.fee_slider = FeeSlider(self, self.config, fee_cb)
-        self.fee_slider.setFixedWidth(140)
+        #self.fee_slider = FeeSlider(self, self.config, fee_cb)
+        #self.fee_slider.setFixedWidth(140)
 
         def on_fee_or_feerate(edit_changed, editing_finished):
             edit_other = self.feerate_e if edit_changed == self.fee_e else self.fee_e
@@ -1149,10 +1151,10 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
 
         self.connect_fields(self, self.amount_e, self.fiat_send_e, self.fee_e)
 
-        vbox_feelabel = QVBoxLayout()
-        vbox_feelabel.addWidget(self.fee_e_label)
-        vbox_feelabel.addStretch(1)
-        grid.addLayout(vbox_feelabel, 5, 0)
+        #vbox_feelabel = QVBoxLayout()
+        #vbox_feelabel.addWidget(self.fee_e_label)
+        #vbox_feelabel.addStretch(1)
+        #grid.addLayout(vbox_feelabel, 5, 0)
 
         self.fee_adv_controls = QWidget()
         hbox = QHBoxLayout(self.fee_adv_controls)
@@ -1163,14 +1165,14 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         hbox.addWidget(self.feerounding_icon, Qt.AlignLeft)
         hbox.addStretch(1)
 
-        vbox_feecontrol = QVBoxLayout()
-        vbox_feecontrol.addWidget(self.fee_adv_controls)
-        vbox_feecontrol.addWidget(self.fee_slider)
+        #vbox_feecontrol = QVBoxLayout()
+        #vbox_feecontrol.addWidget(self.fee_adv_controls)
+        #vbox_feecontrol.addWidget(self.fee_slider)
 
-        grid.addLayout(vbox_feecontrol, 5, 1, 1, -1)
+        #grid.addLayout(vbox_feecontrol, 5, 1, 1, -1)
 
-        if not self.config.get('show_fee', False):
-            self.fee_adv_controls.setVisible(False)
+        #if not self.config.get('show_fee', False):
+        #    self.fee_adv_controls.setVisible(False)
 
         self.preview_button = EnterButton(_("Preview"), self.do_preview)
         self.preview_button.setToolTip(_('Display the details of your transactions before signing it.'))
@@ -1266,83 +1268,83 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         '''Recalculate the fee.  If the fee was manually input, retain it, but
         still build the TX to see if there are enough funds.
         '''
-        freeze_fee = self.is_send_fee_frozen()
-        freeze_feerate = self.is_send_feerate_frozen()
-        amount = '!' if self.is_max else self.amount_e.get_amount()
-        if amount is None:
-            if not freeze_fee:
-                self.fee_e.setAmount(None)
-            self.not_enough_funds = False
-            self.statusBar().showMessage('')
-        else:
-            fee_estimator = self.get_send_fee_estimator()
-            outputs = self.payto_e.get_outputs(self.is_max)
-            if not outputs:
-                _type, addr = self.get_payto_or_dummy()
-                outputs = [(_type, addr, amount)]
-            is_sweep = bool(self.tx_external_keypairs)
-            make_tx = lambda fee_est: \
-                self.wallet.make_unsigned_transaction(
-                    self.get_coins(), outputs, self.config,
-                    fixed_fee=fee_est, is_sweep=is_sweep)
-            try:
-                tx = make_tx(fee_estimator)
-                self.not_enough_funds = False
-            except (NotEnoughFunds, NoDynamicFeeEstimates) as e:
-                if not freeze_fee:
-                    self.fee_e.setAmount(None)
-                if not freeze_feerate:
-                    self.feerate_e.setAmount(None)
-                self.feerounding_icon.setVisible(False)
-
-                if isinstance(e, NotEnoughFunds):
-                    self.not_enough_funds = True
-                elif isinstance(e, NoDynamicFeeEstimates):
-                    try:
-                        tx = make_tx(0)
-                        size = tx.estimated_size()
-                        self.size_e.setAmount(size)
-                    except BaseException:
-                        pass
-                return
-            except BaseException:
-                traceback.print_exc(file=sys.stderr)
-                return
-
-            size = tx.estimated_size()
-            self.size_e.setAmount(size)
-
-            fee = tx.get_fee()
-            fee = None if self.not_enough_funds else fee
-
-            # Displayed fee/fee_rate values are set according to user input.
-            # Due to rounding or dropping dust in CoinChooser,
-            # actual fees often differ somewhat.
-            if freeze_feerate or self.fee_slider.is_active():
-                displayed_feerate = self.feerate_e.get_amount()
-                displayed_feerate = displayed_feerate // 1000 if displayed_feerate else 0
-                displayed_fee = displayed_feerate * size
-                self.fee_e.setAmount(displayed_fee)
-            else:
-                if freeze_fee:
-                    displayed_fee = self.fee_e.get_amount()
-                else:
-                    # fallback to actual fee if nothing is frozen
-                    displayed_fee = fee
-                    self.fee_e.setAmount(displayed_fee)
-                displayed_fee = displayed_fee if displayed_fee else 0
-                displayed_feerate = displayed_fee // size if displayed_fee is not None else None
-                self.feerate_e.setAmount(displayed_feerate)
-
-            # show/hide fee rounding icon
-            feerounding = (fee - displayed_fee) if fee else 0
-            self.set_feerounding_text(feerounding)
-            self.feerounding_icon.setToolTip(self.feerounding_text)
-            self.feerounding_icon.setVisible(bool(feerounding))
-
-            if self.is_max:
-                amount = tx.output_value()
-                self.amount_e.setAmount(amount)
+        # freeze_fee = self.is_send_fee_frozen()
+        # freeze_feerate = self.is_send_feerate_frozen()
+        # amount = '!' if self.is_max else self.amount_e.get_amount()
+        # if amount is None:
+        #     if not freeze_fee:
+        #         self.fee_e.setAmount(None)
+        #     self.not_enough_funds = False
+        #     self.statusBar().showMessage('')
+        # else:
+        #     fee_estimator = self.get_send_fee_estimator()
+        #     outputs = self.payto_e.get_outputs(self.is_max)
+        #     if not outputs:
+        #         _type, addr = self.get_payto_or_dummy()
+        #         outputs = [(_type, addr, amount)]
+        #     is_sweep = bool(self.tx_external_keypairs)
+        #     make_tx = lambda fee_est: \
+        #         self.wallet.make_unsigned_transaction(
+        #             self.get_coins(), outputs, self.config,
+        #             fixed_fee=fee_est, is_sweep=is_sweep)
+        #     try:
+        #         tx = make_tx(fee_estimator)
+        #         self.not_enough_funds = False
+        #     except (NotEnoughFunds, NoDynamicFeeEstimates) as e:
+        #         if not freeze_fee:
+        #             self.fee_e.setAmount(None)
+        #         if not freeze_feerate:
+        #             self.feerate_e.setAmount(None)
+        #         self.feerounding_icon.setVisible(False)
+        #
+        #         if isinstance(e, NotEnoughFunds):
+        #             self.not_enough_funds = True
+        #         elif isinstance(e, NoDynamicFeeEstimates):
+        #             try:
+        #                 tx = make_tx(0)
+        #                 size = tx.estimated_size()
+        #                 self.size_e.setAmount(size)
+        #             except BaseException:
+        #                 pass
+        #         return
+        #     except BaseException:
+        #         traceback.print_exc(file=sys.stderr)
+        #         return
+        #
+        #     size = tx.estimated_size()
+        #     self.size_e.setAmount(size)
+        #
+        #     fee = tx.get_fee()
+        #     fee = None if self.not_enough_funds else fee
+        #
+        #     # Displayed fee/fee_rate values are set according to user input.
+        #     # Due to rounding or dropping dust in CoinChooser,
+        #     # actual fees often differ somewhat.
+        #     if freeze_feerate or self.fee_slider.is_active():
+        #         displayed_feerate = self.feerate_e.get_amount()
+        #         displayed_feerate = displayed_feerate // 1000 if displayed_feerate else 0
+        #         displayed_fee = displayed_feerate * size
+        #         self.fee_e.setAmount(displayed_fee)
+        #     else:
+        #         if freeze_fee:
+        #             displayed_fee = self.fee_e.get_amount()
+        #         else:
+        #             # fallback to actual fee if nothing is frozen
+        #             displayed_fee = fee
+        #             self.fee_e.setAmount(displayed_fee)
+        #         displayed_fee = displayed_fee if displayed_fee else 0
+        #         displayed_feerate = displayed_fee // size if displayed_fee is not None else None
+        #         self.feerate_e.setAmount(displayed_feerate)
+        #
+        #     # show/hide fee rounding icon
+        #     feerounding = (fee - displayed_fee) if fee else 0
+        #     self.set_feerounding_text(feerounding)
+        #     self.feerounding_icon.setToolTip(self.feerounding_text)
+        #     self.feerounding_icon.setVisible(bool(feerounding))
+        #
+        #     if self.is_max:
+        #         amount = tx.output_value()
+        #         self.amount_e.setAmount(amount)
 
     def from_list_delete(self, item):
         i = self.from_list.indexOfTopLevelItem(item)
@@ -1453,10 +1455,10 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
 
         for _type, addr, amount in outputs:
             if addr is None:
-                self.show_error(_('Litecoin Address is None'))
+                self.show_error(_('NewYorkCoin Address is None'))
                 return
             if _type == TYPE_ADDRESS and not bitcoin.is_address(addr):
-                self.show_error(_('Invalid Litecoin Address'))
+                self.show_error(_('Invalid NewYorkCoin Address'))
                 return
             if amount is None:
                 self.show_error(_('Invalid Amount'))
@@ -1496,9 +1498,12 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         if use_rbf:
             tx.set_rbf(True)
 
-        if fee < self.wallet.relayfee() * tx.estimated_size() / 1000:
-            self.show_error(_("This transaction requires a higher fee, or it will not be propagated by the network"))
+        if amount < DUST_SOFT_LIMIT:
+            self.show_error(_("This transaction is small enough to be considered dust. Please choose an amount equal to or higher than the dust limit (.001 nyc)."))
             return
+        # if fee < self.wallet.relayfee() * tx.estimated_size() / 1000:
+        #     self.show_error(_("This transaction requires a higher fee, or it will not be propagated by the network"))
+        #     return
 
         if preview:
             self.show_transaction(tx, tx_desc)
@@ -1707,7 +1712,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
                   self.fee_e, self.feerate_e]:
             e.setText('')
             e.setFrozen(False)
-        self.fee_slider.activate()
+        #self.fee_slider.activate()
         self.feerate_e.setAmount(self.config.fee_per_byte())
         self.size_e.setAmount(0)
         self.feerounding_icon.setVisible(False)

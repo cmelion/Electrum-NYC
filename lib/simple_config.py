@@ -9,6 +9,9 @@ from .util import (user_dir, print_error, PrintError,
                    NoDynamicFeeEstimates, format_satoshis)
 
 from .bitcoin import MAX_FEE_RATE
+from .bitcoin import MAX_BLOCK_SIZE
+from .bitcoin import MAX_BLOCK_SIZE_GEN
+from .bitcoin import MAX_MONEY
 
 FEE_ETA_TARGETS = [25, 10, 5, 2]
 FEE_DEPTH_TARGETS = [10000000, 5000000, 2000000, 1000000, 500000, 200000, 100000]
@@ -407,13 +410,14 @@ class SimpleConfig(PrintError):
         """Returns sat/kvB fee to pay for a txn.
         Note: might return None.
         """
-        if self.is_dynfee():
-            if self.use_mempool_fees():
-                fee_rate = self.depth_to_fee(self.get_depth_level())
-            else:
-                fee_rate = self.eta_to_fee(self.get_fee_level())
-        else:
-            fee_rate = self.get('fee_per_kb', self.max_fee_rate()/10)
+        # if self.is_dynfee():
+        #     if self.use_mempool_fees():
+        #         fee_rate = self.depth_to_fee(self.get_depth_level())
+        #     else:
+        #         fee_rate = self.eta_to_fee(self.get_fee_level())
+        # else:
+        #     fee_rate = self.get('fee_per_kb', self.max_fee_rate()/10)
+        fee_rate = self.max_fee_rate()
         return fee_rate
 
     def fee_per_byte(self):
@@ -424,7 +428,11 @@ class SimpleConfig(PrintError):
         return fee_per_kb / 1000 if fee_per_kb is not None else None
 
     def estimate_fee(self, size):
-        fee_per_kb = self.fee_per_kb()
+        if(size < 27000):
+        # add check for dust amounts and add fee accordingly
+            fee_per_kb = 0
+        else:
+            fee_per_kb = self.fee_per_kb()
         if fee_per_kb is None:
             raise NoDynamicFeeEstimates()
         return self.estimate_fee_for_feerate(fee_per_kb, size)
@@ -435,8 +443,15 @@ class SimpleConfig(PrintError):
         # The GUI for simplicity reasons only displays integer sat/byte,
         # and for the sake of consistency, we thus only use integer sat/byte in
         # the backend too.
+        estimated_fee = fee_per_kb
         fee_per_byte = int(fee_per_kb / 1000)
-        return int(fee_per_byte * size)
+
+        if(size >= MAX_BLOCK_SIZE_GEN /2):
+            if(size > MAX_BLOCK_SIZE_GEN):
+                estimated_fee = MAX_MONEY
+            estimated_fee *= (MAX_BLOCK_SIZE_GEN / (MAX_BLOCK_SIZE_GEN - size))
+
+        return int(estimated_fee)
 
     def update_fee_estimates(self, key, value):
         self.fee_estimates[key] = value

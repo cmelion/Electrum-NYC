@@ -101,8 +101,12 @@ NetworkConstants.set_mainnet()
 ################################## transactions
 
 FEE_STEP = 100000
-MAX_FEE_RATE = 1000000
+MAX_FEE_RATE = 100000
 
+MAX_BLOCK_SIZE = 1000000                #1000kb hard limit
+MAX_BLOCK_SIZE_GEN = MAX_BLOCK_SIZE / 4 #250k soft limit
+MAX_MONEY = 10000000000 * 100000000
+DUST_SOFT_LIMIT = 100000
 
 COINBASE_MATURITY = 20
 COIN = 100000000
@@ -207,10 +211,10 @@ def rev_hex(s):
 
 def int_to_hex(i, length=1):
     assert isinstance(i, int)
-    
+
     s = hex(i)[2:].rstrip('L')
     s = "0"*(2*length - len(s)) + s
-    
+
     return rev_hex(s)
 
 
