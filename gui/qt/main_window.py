@@ -1402,7 +1402,7 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
             tx.set_rbf(True)
 
         if amount < DUST_SOFT_LIMIT:
-            self.show_error(_("This transaction is small enough to be considered dust. Please choose an amount equal to or higher than the dust limit (.001 nyc)."))
+            self.show_error(_("This transaction is small enough to be considered dust. Please choose an amount equal to or higher than the dust limit ({0} nyc).".format(DUST_SOFT_LIMIT/COIN)))
             return
         if preview:
             self.show_transaction(tx, tx_desc)
