@@ -410,13 +410,7 @@ class SimpleConfig(PrintError):
         """Returns sat/kvB fee to pay for a txn.
         Note: might return None.
         """
-        # if self.is_dynfee():
-        #     if self.use_mempool_fees():
-        #         fee_rate = self.depth_to_fee(self.get_depth_level())
-        #     else:
-        #         fee_rate = self.eta_to_fee(self.get_fee_level())
-        # else:
-        #     fee_rate = self.get('fee_per_kb', self.max_fee_rate()/10)
+        
         fee_rate = self.max_fee_rate()
         return fee_rate
 
