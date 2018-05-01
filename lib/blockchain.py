@@ -65,7 +65,7 @@ def hash_header(header):
     return hash_encode(Hash(bfh(serialize_header(header))))
 
 def pow_hash_header(header):
-    return hash_encode(getPoWHash(bfh(serialize_header(header))))
+    return hash_encode(getPoWHash(bfh(serialize_header(header)), header["timestamp"]))
 
 
 blockchains = {}
@@ -298,7 +298,7 @@ class Blockchain(util.PrintError):
             h, t, _ = self.checkpoints[index]
             return t
         # new target
-        # Litecoin: go back the full period unless it's the first retarget
+        # NewYorkCoin: go back the full period unless it's the first retarget
         first_timestamp = self.get_timestamp(index * 2016 - 1 if index > 0 else 0)
         last = self.read_header(index * 2016 + 2015)
         bits = last.get('bits')
@@ -367,7 +367,7 @@ class Blockchain(util.PrintError):
         for index in range(n):
             h = self.get_hash((index+1) * 2016 -1)
             target = self.get_target(index)
-            # Litecoin: also store the timestamp of the last block
+            # NewYorkCoin: also store the timestamp of the last block
             tstamp = self.get_timestamp((index+1) * 2016 - 1)
             cp.append((h, target, tstamp))
         return cp

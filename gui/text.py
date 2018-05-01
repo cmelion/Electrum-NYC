@@ -320,7 +320,7 @@ class ElectrumGui:
 
     def do_send(self):
         if not is_address(self.str_recipient):
-            self.show_message(_('Invalid Litecoin address'))
+            self.show_message(_('Invalid NewYorkCoin address'))
             return
         try:
             amount = int(Decimal(self.str_amount) * COIN)
@@ -340,6 +340,7 @@ class ElectrumGui:
         else:
             password = None
         try:
+            print("text.py: mxtx")
             tx = self.wallet.mktx([(TYPE_ADDRESS, self.str_recipient, amount)], password, self.config, fee)
         except Exception as e:
             self.show_message(str(e))

@@ -552,6 +552,7 @@ class Abstract_Wallet(PrintError):
         return is_relevant, is_mine, v, fee
 
     def get_tx_info(self, tx):
+        print("get_tx_info called")
         is_relevant, is_mine, v, fee = self.get_wallet_delta(tx)
         exp_n = None
         can_broadcast = False
@@ -563,6 +564,7 @@ class Abstract_Wallet(PrintError):
             if tx_hash in self.transactions.keys():
                 label = self.get_label(tx_hash)
                 height, conf, timestamp = self.get_tx_height(tx_hash)
+                print("height %d conf %d", height, conf)
                 if height > 0:
                     if conf:
                         status = _("{} confirmations").format(conf)
@@ -1092,7 +1094,7 @@ class Abstract_Wallet(PrintError):
             _type, data, value = o
             if _type == TYPE_ADDRESS:
                 if not is_address(data):
-                    raise BaseException("Invalid litecoin address:" + data)
+                    raise BaseException("Invalid newyorkcoin address:" + data)
             if value == '!':
                 if i_max is not None:
                     raise BaseException("More than one output set to spend max")
@@ -1139,6 +1141,7 @@ class Abstract_Wallet(PrintError):
             # Let the coin chooser select the coins to spend
             max_change = self.max_change_outputs if self.multiple_change else 1
             coin_chooser = coinchooser.get_coin_chooser(config)
+            print("i_max was None")
             tx = coin_chooser.make_tx(inputs, outputs, change_addrs[:max_change],
                                       fee_estimator, self.dust_threshold())
         else:
@@ -1148,6 +1151,9 @@ class Abstract_Wallet(PrintError):
             outputs[i_max] = (_type, data, 0)
             tx = Transaction.from_io(inputs, outputs[:])
             fee = fee_estimator(tx.estimated_size())
+
+            print("i_max was not None")
+
             amount = max(0, sendable - tx.output_value() - fee)
             outputs[i_max] = (_type, data, amount)
             tx = Transaction.from_io(inputs, outputs[:])
@@ -1158,6 +1164,16 @@ class Abstract_Wallet(PrintError):
         tx.locktime = self.get_local_height()
         run_hook('make_unsigned_transaction', self, tx)
         return tx
+
+    def add_fee_for_dust(self, inputs):
+        additionalFee = 0;
+        for i in inputs:
+            msg = "%d" %(i)
+            print_msg(msg)
+            if i <= DUST_SOFT_LIMIT:
+                additionalFee += MAX_FEE_RATE
+
+        return additionalFee
 
     def mktx(self, outputs, password, config, fee=None, change_addr=None, domain=None):
         coins = self.get_spendable_coins(domain, config)
@@ -1432,7 +1448,7 @@ class Abstract_Wallet(PrintError):
         if not r:
             return
         out = copy.copy(r)
-        out['URI'] = 'litecoin:' + addr + '?amount=' + format_satoshis(out.get('amount'))
+        out['URI'] = 'newyorkcoin:' + addr + '?amount=' + format_satoshis(out.get('amount'))
         status, conf = self.get_request_status(addr)
         out['status'] = status
         if conf is not None:
@@ -2219,4 +2235,3 @@ class Wallet(object):
         if wallet_type in wallet_constructors:
             return wallet_constructors[wallet_type]
         raise RuntimeError("Unknown wallet type: " + wallet_type)
-

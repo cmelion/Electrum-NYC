@@ -1073,6 +1073,7 @@ class Network(util.DaemonThread):
     def broadcast(self, tx, timeout=30):
         tx_hash = tx.txid()
         try:
+            print(str(tx))
             out = self.synchronous_get(('blockchain.transaction.broadcast', [str(tx)]), timeout)
         except BaseException as e:
             return False, "error: " + str(e)

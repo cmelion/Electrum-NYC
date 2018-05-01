@@ -181,7 +181,7 @@ class SendScreen(CScreen):
         try:
             uri = electrum.util.parse_URI(text, self.app.on_pr)
         except:
-            self.app.show_info(_("Not a Litecoin URI"))
+            self.app.show_info(_("Not a NewYorkCoin URI"))
             return
         amount = uri.get('amount')
         self.screen.address = uri.get('address', '')
@@ -251,10 +251,10 @@ class SendScreen(CScreen):
         else:
             address = str(self.screen.address)
             if not address:
-                self.app.show_error(_('Recipient not specified.') + ' ' + _('Please scan a Litecoin address or a payment request'))
+                self.app.show_error(_('Recipient not specified.') + ' ' + _('Please scan a NewYorkCoin address or a payment request'))
                 return
             if not bitcoin.is_address(address):
-                self.app.show_error(_('Invalid Litecoin Address') + ':\n' + address)
+                self.app.show_error(_('Invalid NewYorkCoin Address') + ':\n' + address)
                 return
             try:
                 amount = self.app.get_amount(self.screen.amount)
@@ -371,7 +371,7 @@ class ReceiveScreen(CScreen):
 
     def do_share(self):
         uri = self.get_URI()
-        self.app.do_share(uri, _("Share Litecoin Request"))
+        self.app.do_share(uri, _("Share NewYorkCoin Request"))
 
     def do_copy(self):
         uri = self.get_URI()
