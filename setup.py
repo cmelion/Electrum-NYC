@@ -8,6 +8,7 @@ import sys
 import platform
 import imp
 import argparse
+import py2exe
 
 with open('contrib/requirements/requirements.txt') as f:
     requirements = f.read().splitlines()
@@ -35,7 +36,7 @@ if platform.system() in ['Linux', 'FreeBSD', 'DragonFly']:
             usr_share = os.path.expanduser('~/.local/share')
     data_files += [
         (os.path.join(usr_share, 'applications/'), ['electrum-nyc.desktop']),
-        (os.path.join(usr_share, 'pixmaps/'), ['icons/electrum-ltc.png'])
+        (os.path.join(usr_share, 'pixmaps/'), ['icons/electrum-nyc.png'])
     ]
 
 setup(
@@ -80,10 +81,10 @@ setup(
     },
     scripts=['electrum-nyc'],
     data_files=data_files,
-    description="Lightweight Litecoin Wallet",
+    description="Lightweight NewYorkCoin Wallet",
     author="Thomas Voegtlin",
     author_email="thomasv@electrum.org",
     license="MIT Licence",
     url="http://electrum-nyc.org",
-    long_description="""Lightweight Litecoin Wallet"""
+    long_description="Lightweight NewYorkCoin Wallet",
 )

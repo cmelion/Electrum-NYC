@@ -388,13 +388,16 @@ class SimpleConfig(PrintError):
 
 
     def static_fee(self, i):
+        print("simple_config: static_fee called")
         return self.fee_rates[i]
 
     def static_fee_index(self, value):
+        print("simple_config: static_fee_index called")
         dist = list(map(lambda x: abs(x - value), self.fee_rates))
         return min(range(len(dist)), key=dist.__getitem__)
 
     def has_fee_etas(self):
+        print("simple_config: has_fee_etas called")
         return len(self.fee_estimates) == 4
 
     def has_fee_mempool(self):
@@ -410,7 +413,8 @@ class SimpleConfig(PrintError):
         """Returns sat/kvB fee to pay for a txn.
         Note: might return None.
         """
-        
+        if self.is_dynfee():
+            print("Dynamic fee requested but not implemented")
         fee_rate = self.max_fee_rate()
         return fee_rate
 
@@ -437,13 +441,14 @@ class SimpleConfig(PrintError):
         # The GUI for simplicity reasons only displays integer sat/byte,
         # and for the sake of consistency, we thus only use integer sat/byte in
         # the backend too.
-        estimated_fee = fee_per_kb
+        estimated_fee = fee_per_kb * (size / 1000)
         fee_per_byte = int(fee_per_kb / 1000)
 
         if(size >= MAX_BLOCK_SIZE_GEN /2):
             if(size > MAX_BLOCK_SIZE_GEN):
                 estimated_fee = MAX_MONEY
             estimated_fee *= (MAX_BLOCK_SIZE_GEN / (MAX_BLOCK_SIZE_GEN - size))
+
 
         return int(estimated_fee)
 

@@ -132,7 +132,7 @@ class ElectrumWindow(App):
         self.send_screen.set_URI(uri)
 
     def on_new_intent(self, intent):
-        if intent.getScheme() != 'litecoin':
+        if intent.getScheme() != 'newyorkcoin':
             return
         uri = intent.getDataString()
         self.set_URI(uri)
@@ -300,7 +300,7 @@ class ElectrumWindow(App):
         if is_address(data):
             self.set_URI(data)
             return
-        if data.startswith('litecoin:'):
+        if data.startswith('newyorkcoin:'):
             self.set_URI(data)
             return
         # try to decode transaction
@@ -581,7 +581,7 @@ class ElectrumWindow(App):
         self.receive_screen = None
         self.requests_screen = None
         self.address_screen = None
-        self.icon = "icons/electrum-ltc.png"
+        self.icon = "icons/electrum-nyc.png"
         self.tabs = self.root.ids['tabs']
 
     def update_interfaces(self, dt):
